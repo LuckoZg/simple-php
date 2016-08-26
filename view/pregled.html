@@ -1,0 +1,53 @@
+<?php
+
+echo'
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simple PHP Code</title>';
+
+	include("view/parts/head.html"); 
+
+echo '
+</head>
+<body>';
+
+include("view/parts/nav.php");
+
+echo'
+<div class="container">';
+
+echo '
+<center class="row" style="margin-bottom: 30px;">
+<a href="'.BASE_PATH.'">Svi</a> &sdot; ';
+foreach($data["abeceda"] as $slovo)
+{
+	echo '<a href="'.BASE_PATH.'pregled/'.$slovo.'">'.strtoupper($slovo).'</a> &sdot; ';
+}
+echo'
+</center>
+<div class="row">
+';
+
+foreach($data["filmovi"] AS $film)
+{
+	echo '
+	<center class="col-md-4" style="padding: 10px; margin-bottom: 25px;">
+		<img src="'.IMAGES_PATH.$film["slika"].'" class="img-rounded" alt="" width="140" height="200"><br><br>
+		<i>'.$film["naslov"].' ('.$film["godina"].')</i><br>
+		<i>'.$film["trajanje"].' min</i>
+	</center>
+	';
+}	
+
+
+	echo'
+	</div>
+	</div>
+</div>
+
+</body>
+</html>';
+
+
+?>

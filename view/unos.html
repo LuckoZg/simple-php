@@ -1,0 +1,108 @@
+<?php
+
+echo'
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simple PHP Code</title>';
+
+	include("view/parts/head.html"); 
+
+echo '
+</head>
+<body>';
+
+include("view/parts/nav.php");
+
+echo'
+<div class="container">';
+
+include("view/parts/alert.php");
+
+echo'
+<div class="row">
+<div class="col-md-4">';
+
+echo' 
+<br />
+<form action="" method="POST" enctype="multipart/form-data">
+
+<label for="naslov">Naslov:</label> 
+<input type="text" id="naslov" class="form-control" name="naslov" size="30"/>
+<br>
+
+<label for="zanr">Žanr:</label> 
+<select id="zanr" class="form-control" name="zanr">
+<option value=""></option>';
+
+foreach($data["zanrovi"] AS $zanr)
+{
+	echo '<option value="'.$zanr["id"].'">'.$zanr["naziv"].'</option>';
+}
+
+echo'
+</select>
+<br> 
+
+<label for="godina">Godina:</label> 
+<select id="godina" class="form-control" name="godina">
+<option value=""></option>';
+
+for($i=date("Y", time()); $i >= 1900; $i--)
+{
+	echo '<option value="'.$i.'">'.$i.'</option>';
+}
+
+echo'
+</select>
+<br>
+
+<label for="trajanje">Trajanje:</label>  
+<input type="text" id="trajanje" class="form-control" name="trajanje" value="" size="8"/>
+<br>
+
+<label for="slika">Slika:</label>
+<input type="file" id="img" name="img" value="Slika" />
+<br>
+
+<input type="submit" class="btn btn-primary" name="btnSubmit" value="Unos" />
+
+</form>
+</div>';
+
+echo'
+<div class="col-md-8">
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Slika</th>
+			<th>Naslov</th>
+			<th>Godina</th>
+			<th>Trajanje</th>
+			<th>Akcija</th>
+		</tr>
+	</thead>
+	<tbody>';
+
+foreach($data["filmovi"] AS $film)
+{		  
+		echo'
+		<tr>
+			<td><img src="'.IMAGES_PATH.$film["slika"].'" width="60" height="80"/></td>
+			<td>'.$film["naslov"].'</td>
+			<td>'.$film["godina"].'</td>
+			<td>'.$film["trajanje"].' min</td>
+			<td><a href="'.BASE_PATH.'unos/delete/'.$film["id"].'">[Obriši]</a></td>
+		</tr>';
+}
+		
+echo'
+	</tbody>
+</table>
+</div>
+</div>
+</div>
+</body>
+</html>';
+
+?>
