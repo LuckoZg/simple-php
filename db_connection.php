@@ -5,25 +5,13 @@ $username = 'root';
 $password = '';
 $database = 'kolekcija';
 
-$db = mysql_connect($server, $username, $password);
+try {
+    $db = new PDO('mysql:host='.$server.';dbname='.$database.';charset=utf8', $username, $password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	//$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+} catch(PDOException $ex) {
+    echo $ex->getMessage();
+}
 
-if($db)
-{
-	#echo 'Uspjesno spojeni na MySQL server';
-	
-	if(mysql_select_db($database, $db))
-	{
-		#echo '<br />Baza podataka uspjesno odabrana';
-		mysql_query("SET NAMES utf8");
-	}
-	else
-	{
-		echo 'Pogreska kod odabira baze';
-	}
-}
-else
-{
-	echo 'Pogreska kod spajanja na MySQL server';
-}
 
 ?>

@@ -19,10 +19,10 @@ echo'
 
 echo '
 <center class="row" style="margin-bottom: 30px;">
-<a href="'.BASE_PATH.'">Svi</a> &sdot; ';
+<a href="'.BASE_PATH.'">Svi</a> ';
 foreach($data["abeceda"] as $slovo)
 {
-	echo '<a href="'.BASE_PATH.'pregled/'.$slovo.'">'.strtoupper($slovo).'</a> &sdot; ';
+	echo ' &sdot; <a href="'.BASE_PATH.'pregled/'.$slovo.'">'.strtoupper($slovo).'</a>';
 }
 echo'
 </center>

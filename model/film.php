@@ -3,15 +3,23 @@
 function get($slovo){
 	$data = array();
 
+	global $db;
+
 	$query = "SELECT *
 			  FROM filmovi
-			  WHERE naslov LIKE '$slovo%'
+			  WHERE naslov LIKE :slovo
 			  ORDER BY naslov ASC";
 
-	$result = mysql_query($query) or die(mysql_error());
+	try {
+		$stmt = $db->prepare($query);
+		$stmt->execute(array(':slovo' => $slovo.'%'));
 
-	while($row = mysql_fetch_array($result)){
-		array_push($data, $row);
+		while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+			array_push($data, $row);
+		}
+	}
+	catch(PDOException $ex){
+		$ex->getMessage();
 	}
 
 	return $data;
@@ -20,14 +28,20 @@ function get($slovo){
 function get_zanrovi(){
 	$data = array();
 
+	global $db;
+
 	$query = "SELECT id, naziv
 		  	  FROM zanr
 		      ORDER BY naziv ASC";
 
-	$result = mysql_query($query) or die(mysql_error());
-
-	while($row = mysql_fetch_array($result)){
-		array_push($data, $row);
+    try {
+    	$stmt = $db->query($query);
+		while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+			array_push($data, $row);
+		}
+	}
+	catch(PDOException $ex){
+		$ex->getMessage();
 	}
 
 	return $data;
@@ -36,31 +50,46 @@ function get_zanrovi(){
 function delete($id){
 	$data = array("status" => 0, "msg" => "No change");
 
-	$query = "SELECT * FROM filmovi
-			  WHERE id = '$id'";
+	global $db;
 
-	$result = mysql_query($query) or die(mysql_error());
+	$query = "SELECT slika FROM filmovi
+			  WHERE id = :id";
 
-	$row = mysql_fetch_array($result);
+	try {
+		$stmt = $db->prepare($query);
+		$stmt->execute(array(':id' => $id));
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+	catch(PDOException $ex){
+		$ex->getMessage();
+	}
 
 	if(is_file(IMAGES_REL_PATH.$row["slika"]))
 	{
-		unlink(IMAGES_REL_PATH.$row["slika"];
-			
-		$query = "DELETE FROM filmovi
-				  WHERE id = '$id'";
+		unlink(IMAGES_REL_PATH.$row["slika"]);
 
-		$result = mysql_query($query) or die(mysql_error());
+		$query = "DELETE FROM filmovi
+				  WHERE id = :id";
+
+		try {
+			$stmt = $db->prepare($query);
+			$stmt->execute(array(':id' => $id));
+		}
+		catch(PDOException $ex){
+			$ex->getMessage();
+		}
 		
 		return array("status" => 1, "msg" => "Film je obrisan");
 	}
 
-	return array("status" => 0, "msg" => "Film je obrisan");
+	return array("status" => 1, "msg" => "Film je obrisan");
 }
 
 function post($post, $files)
 {
 	$data = array("status" => 0, "msg" => "No change");
+
+	global $db;
 
 	if($post["naslov"] == "" ||
 	   $post["zanr"] == "" ||
@@ -90,20 +119,22 @@ function post($post, $files)
 
 			if(move_uploaded_file($tmp_name, $path))
 			{	
-				$queryInsert = "INSERT INTO filmovi
+				$query = "INSERT INTO filmovi
 						   		(naslov, id_naziv, godina, trajanje, slika)
 								VALUES
-						   		('$naslov', '$id_naziv', '$godina', '$trajanje', '$new_name')";
-						   
-				if($queryResult = mysql_query($queryInsert))
-				{
-					$data = array("status" => 1, "msg" => "Film je uspješno unesen");
+						   		(:naslov, :id_naziv, :godina, :trajanje, :new_name)";
+
+				try {
+					$stmt = $db->prepare($query);
+					$stmt->execute(array(':naslov' => $naslov, ':id_naziv' => $id_naziv, ':godina' => $godina, ':trajanje' => $trajanje, ':new_name' => $new_name));
 				}
-				else
-				{
+				catch(PDOException $ex){
 					unlink($path);
-					$data = array("status" => 0, "msg" => "Greška pri unosu u bazu");
+					//$data = array("status" => 0, "msg" => "Greška pri unosu u bazu");
+					$ex->getMessage();
 				}
+
+				$data = array("status" => 1, "msg" => "Film je uspješno unesen");
 			}
 			else
 			{
